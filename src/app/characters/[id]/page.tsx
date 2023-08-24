@@ -1,9 +1,7 @@
 'use client';
 
-import { Breadcrumbs, Flex, Item } from '@adobe/react-spectrum';
-import ChevronRight from '@spectrum-icons/workflow/ChevronRight';
+import { Flex } from '@adobe/react-spectrum';
 import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useContext, useMemo } from 'react';
 
@@ -37,19 +35,9 @@ export default function CharacterPage(): JSX.Element {
     );
   }, [id, user]);
 
-  const title = useMemo(() => {
-    return (
-      <>
-        <Link href="/characters">All</Link>
-        <ChevronRight />
-        {character?.name}
-      </>
-    );
-  }, [character?.name]);
-
   return (
     <CharacterPageContext.Provider value={{ character }}>
-      <PageSection title={title} actions={actions}>
+      <PageSection title={character?.name} actions={actions}>
         {character && <CharacterDetails character={character} />}
       </PageSection>
     </CharacterPageContext.Provider>
