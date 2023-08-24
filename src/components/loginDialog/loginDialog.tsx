@@ -9,8 +9,9 @@ import {
   TextField,
   useDialogContainer,
 } from '@adobe/react-spectrum';
+import { TextFieldRef } from '@react-types/textfield';
 import { produce } from 'immer';
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo, useRef } from 'react';
 import { useSetState } from 'react-use';
 
 import { AppContext } from '@/app/appContext';
@@ -40,6 +41,7 @@ export const LoginDialog = (): JSX.Element => {
   const dialogContainer = useDialogContainer();
   const { setUser } = useContext(AppContext);
   const [formData, setFormData] = useSetState<FormData>(defaultFormData);
+  const nameFieldRef = useRef<TextFieldRef>(null);
 
   const isFormValid = useMemo(() => {
     return formData.email.value && formData.password.value;
@@ -52,15 +54,17 @@ export const LoginDialog = (): JSX.Element => {
     setFormData((prevData) =>
       produce(prevData, (draft) => {
         draft.email.isValid = isValidEmail;
-        draft.email.error = isValidEmail ? undefined : 'User does not exist';
+        draft.email.error = isValidEmail ? undefined : 'User with this emails does not exist';
       })
     );
 
     if (isValidEmail) {
       setUser(dummyUsers[dummyUserIndex]);
+      dialogContainer.dismiss();
+    } else {
+      nameFieldRef.current?.focus();
+      nameFieldRef.current?.select();
     }
-
-    dialogContainer.dismiss();
   }, [dialogContainer, formData.email.value, setFormData, setUser]);
 
   return (
@@ -69,12 +73,20 @@ export const LoginDialog = (): JSX.Element => {
       <Divider />
 
       <Content>
-        <Form>
+        <Form id="foo">
           <TextField
+            ref={nameFieldRef}
             label="Email"
             name="email"
             type="email"
             value={formData.email.value}
+            validationState={
+              formData.email.isValid === undefined
+                ? undefined
+                : formData.email.isValid
+                ? 'valid'
+                : 'invalid'
+            }
             errorMessage={formData.email.error}
             onChange={(value) =>
               setFormData({ email: { value, isValid: undefined, error: undefined } })
@@ -102,7 +114,7 @@ export const LoginDialog = (): JSX.Element => {
           Cancel
         </Button>
 
-        <Button variant="accent" isDisabled={!isFormValid} onPress={handleLogin}>
+        <Button variant="accent" isDisabled={!isFormValid} onPress={handleLogin} type="submit">
           Log in
         </Button>
       </ButtonGroup>
