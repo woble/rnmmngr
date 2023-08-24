@@ -11,6 +11,14 @@ type CharacterDetailsProps = {
   character: RickAndMortyCharacter;
 };
 
+const dummyDetails = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Viverra nibh cras pulvinar mattis nunc sed blandit. Elementum sagittis vitae et leo duis. Sit amet massa vitae tortor condimentum. At urna condimentum mattis pellentesque id. Neque sodales ut etiam sit amet. Senectus et netus et malesuada fames. Enim sed faucibus turpis in eu. Fermentum odio eu feugiat pretium nibh ipsum consequat nisl. Donec pretium vulputate sapien nec. Cras adipiscing enim eu turpis egestas. Et egestas quis ipsum suspendisse. Sed faucibus turpis in eu mi bibendum neque egestas. Id diam vel quam elementum pulvinar etiam.',
+  'Pharetra convallis posuere morbi leo urna molestie at. Lorem sed risus ultricies tristique nulla aliquet enim. Eu ultrices vitae auctor eu augue ut lectus arcu. Eget magna fermentum iaculis eu non diam phasellus vestibulum. Venenatis tellus in metus vulputate eu scelerisque. Libero id faucibus nisl tincidunt eget. Id faucibus nisl tincidunt eget nullam. Volutpat ac tincidunt vitae semper quis lectus. Tempor nec feugiat nisl pretium fusce id velit ut tortor. Proin libero nunc consequat interdum varius sit. Tristique risus nec feugiat in fermentum posuere urna. Sollicitudin aliquam ultrices sagittis orci a scelerisque purus semper eget.',
+  'Magna ac placerat vestibulum lectus. Eu ultrices vitae auctor eu augue ut lectus. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Pellentesque habitant morbi tristique senectus et netus et. Tellus molestie nunc non blandit massa enim nec dui nunc. Integer enim neque volutpat ac. Aliquet nibh praesent tristique magna sit amet purus. Est lorem ipsum dolor sit. Volutpat diam ut venenatis tellus in. Ultricies lacus sed turpis tincidunt id aliquet risus. Mauris a diam maecenas sed enim ut.',
+  'Aenean et tortor at risus viverra adipiscing. Amet est placerat in egestas erat imperdiet sed euismod. Purus viverra accumsan in nisl. Enim ut tellus elementum sagittis vitae et leo duis ut. Suspendisse sed nisi lacus sed viverra tellus in. Nibh tortor id aliquet lectus proin nibh. Tristique senectus et netus et. Arcu non sodales neque sodales ut etiam sit. Adipiscing vitae proin sagittis nisl rhoncus. Cursus mattis molestie a iaculis at erat pellentesque adipiscing commodo. Nisi porta lorem mollis aliquam. Fringilla urna porttitor rhoncus dolor purus non enim praesent elementum. Tempus quam pellentesque nec nam aliquam sem et tortor. Augue ut lectus arcu bibendum at varius vel pharetra vel. Leo vel fringilla est ullamcorper eget nulla facilisi etiam. Elementum sagittis vitae et leo duis ut diam. Sagittis id consectetur purus ut faucibus pulvinar elementum. Sed viverra ipsum nunc aliquet bibendum. Cursus euismod quis viverra nibh cras pulvinar mattis nunc.',
+  'In pellentesque massa placerat duis ultricies. Nisi vitae suscipit tellus mauris a diam maecenas. Cursus euismod quis viverra nibh cras pulvinar mattis nunc. Lorem ipsum dolor sit amet. At quis risus sed vulputate odio ut enim blandit volutpat. Massa vitae tortor condimentum lacinia quis vel eros donec. Et sollicitudin ac orci phasellus egestas tellus rutrum tellus pellentesque. Tincidunt tortor aliquam nulla facilisi cras fermentum odio eu feugiat. Curabitur vitae nunc sed velit dignissim sodales ut eu. Arcu risus quis varius quam. Egestas egestas fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate. Ullamcorper morbi tincidunt ornare massa eget egestas purus. Ac placerat vestibulum lectus mauris ultrices eros in cursus turpis. At urna condimentum mattis pellentesque id nibh tortor id. Eu lobortis elementum nibh tellus molestie nunc. Cursus mattis molestie a iaculis at. Nisi porta lorem mollis aliquam ut porttitor leo a. Aliquet porttitor lacus luctus accumsan. Risus feugiat in ante metus dictum at tempor. Vitae suscipit tellus mauris a.',
+];
+
 export const CharacterDetails = ({ character }: CharacterDetailsProps): JSX.Element => {
   return (
     <Grid columns="140px 1fr" gap="size-200">
@@ -44,20 +52,11 @@ export const CharacterDetails = ({ character }: CharacterDetailsProps): JSX.Elem
       </View>
 
       <View>
-        <p className={styles.paragraph}>
-          Richard "Rick" Sanchez of Dimension C-137, commonly referred to as Rick C-137, is the
-          titular main protagonist of the Rick and Morty franchise.
-        </p>
-
-        <p className={styles.paragraph}>
-          He is a megagenius scientist whose alcoholism and reckless, nihilistic behavior are
-          sources of concern for his "daughter's" family, as well as the safety of their son, Morty.
-          Upon the series' inception, Rick's mysterious origins and mental health were large sources
-          of speculation. As time has gone on, more has been revealed about his character; his
-          backstory explaining much of his behavior. At the same time, Rick has continuously
-          committed more heinous acts, certifying him as the series' anti-hero, bordering on
-          antagonist.
-        </p>
+        {dummyDetails.map((paragraph, index) => (
+          <p key={index} className={styles.paragraph}>
+            {paragraph}
+          </p>
+        ))}
       </View>
     </Grid>
   );
