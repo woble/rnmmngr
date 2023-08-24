@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
   View,
 } from '@adobe/react-spectrum';
+import ChevronRight from '@spectrum-icons/workflow/ChevronRight';
 import Preview from '@spectrum-icons/workflow/Preview';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -33,12 +34,7 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
   const { id, name, image, gender, species } = character;
 
   return (
-    <div
-      onClick={(event) => {
-        event.stopPropagation();
-        router.push(`/characters/${id}`);
-      }}
-    >
+    <>
       <View
         elementType="article"
         backgroundColor="gray-50"
@@ -46,6 +42,7 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
         overflow="hidden"
         borderColor="blue-400"
         borderWidth="thin"
+        position="relative"
       >
         <Flex direction="column" height="100%">
           <View elementType="header" flexShrink={0} padding="size-100" paddingBottom={0}>
@@ -83,14 +80,18 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
 
                 <Tooltip>Preview character</Tooltip>
               </TooltipTrigger>
-            </Flex>
 
-            <DialogContainer isDismissable onDismiss={() => setIsDialogOpen(false)}>
-              {isDialogOpen && <CharacterDialog character={character} />}
-            </DialogContainer>
+              <ActionButton marginStart="auto" onPress={() => router.push(`/characters/${id}`)}>
+                <ChevronRight />
+              </ActionButton>
+            </Flex>
           </View>
         </Flex>
       </View>
-    </div>
+
+      <DialogContainer isDismissable onDismiss={() => setIsDialogOpen(false)}>
+        {isDialogOpen && <CharacterDialog character={character} />}
+      </DialogContainer>
+    </>
   );
 };
