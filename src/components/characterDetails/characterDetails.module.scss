@@ -1,0 +1,7 @@
+.paragraph {
+  margin: 0;
+
+  & + & {
+    margin-top: var(--spectrum-global-dimension-size-200, var(--spectrum-alias-size-200));
+  }
+}

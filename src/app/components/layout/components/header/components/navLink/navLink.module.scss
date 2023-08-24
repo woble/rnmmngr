@@ -1,0 +1,9 @@
+.root {
+  color: currentColor;
+  font-weight: bold;
+  text-decoration: none;
+
+  &.active {
+    color: red;
+  }
+}

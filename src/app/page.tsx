@@ -1,95 +1,72 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client';
 
-export default function Home() {
+import { ActionButton, Flex } from '@adobe/react-spectrum';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
+
+import { EpisodesGrid, PageSection } from '@/components';
+import { CharactersGrid } from '@/components/charactersGrid';
+import {
+  readCharacters,
+  ReadCharactersApiResponse,
+  readEpisodes,
+  ReadEpisodesApiResponse,
+} from '@/utils';
+
+export default function HomePage() {
+  const router = useRouter();
+
+  const { data: charactersData } = useQuery<ReadCharactersApiResponse>({
+    queryKey: ['characters'],
+    queryFn: readCharacters,
+    refetchOnMount: false,
+  });
+
+  const { data: episodesData } = useQuery<ReadEpisodesApiResponse>({
+    queryKey: ['episodes'],
+    queryFn: readEpisodes,
+    refetchOnMount: false,
+  });
+
+  const characters = useMemo(() => {
+    if (!charactersData || !charactersData.results) {
+      return undefined;
+    }
+
+    return charactersData.results.slice(0, 4);
+  }, [charactersData]);
+
+  const episodes = useMemo(() => {
+    if (!episodesData || !episodesData.results) {
+      return undefined;
+    }
+
+    return episodesData.results.slice(0, 3);
+  }, [episodesData]);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <Flex gap="size-800" direction="column">
+      <PageSection
+        title="Characters"
+        actions={<ActionButton onPress={() => router.push('/characters')}>View all</ActionButton>}
+      >
+        {characters && <CharactersGrid characters={characters} />}
+      </PageSection>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+      <PageSection
+        title="Episodes"
+        actions={<ActionButton onPress={() => router.push('/episodes')}>View all</ActionButton>}
+      >
+        {episodes && <EpisodesGrid episodes={episodes} />}
+      </PageSection>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      <PageSection
+        title="Locations"
+        actions={<ActionButton onPress={() => router.push('/locations')}>View all</ActionButton>}
+      >
+        locations
+      </PageSection>
+    </Flex>
+  );
 }

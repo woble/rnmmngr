@@ -1,3 +1,41 @@
 {
-  "extends": "next/core-web-vitals"
+  "plugins": ["prettier", "import"],
+  "extends": ["next", "plugin:prettier/recommended"],
+  "rules": {
+    "prettier/prettier": "warn",
+    "sort-imports": [
+      "warn",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+      }
+    ],
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object"
+        ],
+        "alphabetize": {
+          "order": "asc"
+        },
+        "newlines-between": "always"
+      }
+    ],
+    "react/jsx-newline": [
+      "warn",
+      {
+        "prevent": true,
+        "allowMultilines": true
+      }
+    ]
+  }
 }
