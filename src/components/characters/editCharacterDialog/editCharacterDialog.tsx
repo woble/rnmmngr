@@ -6,11 +6,10 @@ import {
   Divider,
   Form,
   Heading,
-  Item,
-  Picker,
   TextField,
   useDialogContainer,
 } from '@adobe/react-spectrum';
+import { ToastQueue } from '@react-spectrum/toast';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import isEqual from 'lodash/isEqual';
@@ -25,49 +24,12 @@ import {
   RickAndMortyCharacterStatus,
 } from '@/utils';
 
+import { CharacterGenderPicker } from '../characterGenderPicker';
+import { CharacterStatusPicker } from '../characterStatusPicker';
+
 type EditCharacterDialogProps = {
   character: RickAndMortyCharacter;
 };
-
-const statusItems: readonly {
-  readonly name: string;
-  readonly key: RickAndMortyCharacterStatus;
-}[] = [
-  {
-    name: 'Alive',
-    key: 'Alive',
-  },
-  {
-    name: 'Dead',
-    key: 'Dead',
-  },
-  {
-    name: 'Unknown',
-    key: 'unknown',
-  },
-];
-
-const genderItems: readonly {
-  readonly name: string;
-  readonly key: RickAndMortyCharacterGender;
-}[] = [
-  {
-    name: 'Female',
-    key: 'Female',
-  },
-  {
-    name: 'Male',
-    key: 'Male',
-  },
-  {
-    name: 'Genderless',
-    key: 'Genderless',
-  },
-  {
-    name: 'Unknown',
-    key: 'unknown',
-  },
-];
 
 export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JSX.Element => {
   const queryClient = useQueryClient();
@@ -109,6 +71,10 @@ export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JS
         });
       }
     );
+
+    ToastQueue.positive('Character updated', {
+      timeout: 50,
+    });
   }, [character.id, draftCharacter, queryClient]);
 
   return (
@@ -132,29 +98,19 @@ export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JS
             onChange={(species) => setDraftCharacter({ species })}
           />
 
-          <Picker
-            label="Status"
-            name="status"
-            items={statusItems}
+          <CharacterStatusPicker
             selectedKey={draftCharacter.status}
             onSelectionChange={(status) =>
               setDraftCharacter({ status: status as RickAndMortyCharacterStatus })
             }
-          >
-            {(item) => <Item key={item.key}>{item.name}</Item>}
-          </Picker>
+          />
 
-          <Picker
-            label="Gender"
-            name="gender"
-            items={genderItems}
+          <CharacterGenderPicker
             selectedKey={draftCharacter.gender}
             onSelectionChange={(gender) =>
               setDraftCharacter({ gender: gender as RickAndMortyCharacterGender })
             }
-          >
-            {(item) => <Item key={item.key}>{item.name}</Item>}
-          </Picker>
+          />
         </Form>
       </Content>
 

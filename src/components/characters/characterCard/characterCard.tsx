@@ -4,7 +4,6 @@ import {
   DialogContainer,
   Flex,
   Heading,
-  Text,
   Tooltip,
   TooltipTrigger,
   View,
@@ -18,7 +17,7 @@ import { useContext, useState } from 'react';
 import { AppContext } from '@/app/appContext';
 import { RickAndMortyCharacter } from '@/utils';
 
-import { AspectRatio } from '../aspectRatio';
+import { AspectRatio } from '../../aspectRatio';
 import { CharacterDialog } from '../characterDialog';
 import { FavouriteCharacterToggleButton } from '../favouriteCharacterToggleButton';
 

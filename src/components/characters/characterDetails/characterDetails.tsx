@@ -1,9 +1,18 @@
-import { Flex, Grid, LabeledValue, View } from '@adobe/react-spectrum';
+import { Flex, Grid, View } from '@adobe/react-spectrum';
+import { useQuery } from '@tanstack/react-query';
+import { parse } from 'date-fns';
 import Image from 'next/image';
 
-import { RickAndMortyCharacter } from '@/utils';
+import { LabeledValue } from '@/components';
+import {
+  readEpisode,
+  RickAndMortyCharacter,
+  RickAndMortyEpisode,
+  useEpisode,
+  useLocation,
+} from '@/utils';
 
-import { AspectRatio } from '../aspectRatio';
+import { AspectRatio } from '../../aspectRatio';
 
 import styles from './characterDetails.module.scss';
 
@@ -19,9 +28,26 @@ const dummyDetails = [
   'In pellentesque massa placerat duis ultricies. Nisi vitae suscipit tellus mauris a diam maecenas. Cursus euismod quis viverra nibh cras pulvinar mattis nunc. Lorem ipsum dolor sit amet. At quis risus sed vulputate odio ut enim blandit volutpat. Massa vitae tortor condimentum lacinia quis vel eros donec. Et sollicitudin ac orci phasellus egestas tellus rutrum tellus pellentesque. Tincidunt tortor aliquam nulla facilisi cras fermentum odio eu feugiat. Curabitur vitae nunc sed velit dignissim sodales ut eu. Arcu risus quis varius quam. Egestas egestas fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate. Ullamcorper morbi tincidunt ornare massa eget egestas purus. Ac placerat vestibulum lectus mauris ultrices eros in cursus turpis. At urna condimentum mattis pellentesque id nibh tortor id. Eu lobortis elementum nibh tellus molestie nunc. Cursus mattis molestie a iaculis at. Nisi porta lorem mollis aliquam ut porttitor leo a. Aliquet porttitor lacus luctus accumsan. Risus feugiat in ante metus dictum at tempor. Vitae suscipit tellus mauris a.',
 ];
 
+function getEpisodeIdFromUrl(url: string): number | undefined {
+  const episodeIdString = url.split('/').pop();
+  return typeof episodeIdString === 'undefined' ? undefined : parseInt(episodeIdString);
+}
+
 export const CharacterDetails = ({ character }: CharacterDetailsProps): JSX.Element => {
+  const { data: firstEpisode } = useEpisode({
+    id: character.episode[0],
+  });
+
+  const { data: lastLocation } = useLocation({
+    id: character.location.url,
+  });
+
+  const { data: originLocation } = useLocation({
+    id: character.origin.url,
+  });
+
   return (
-    <Grid columns="140px 1fr" gap="size-200">
+    <Grid columns="180px 1fr" gap="size-200">
       <View>
         <AspectRatio ratio={1 / 1} marginBottom="size-200" borderRadius="regular" overflow="hidden">
           {character.image && (
@@ -36,18 +62,29 @@ export const CharacterDetails = ({ character }: CharacterDetailsProps): JSX.Elem
         </AspectRatio>
 
         <Flex direction="column" gap="size-200">
-          <LabeledValue label="Gender" value={character.gender} />
-          <LabeledValue label="Species" value={character.species} />
-          <LabeledValue label="Origin" value={character.origin.name} />
-          <LabeledValue label="Status" value={character.status} />
-          <LabeledValue label="Location" value={character.location.name} />
-          <LabeledValue label="Episodes" value={character.episode.length} />
+          <LabeledValue label="Gender">{character.gender}</LabeledValue>
+          <LabeledValue label="Species">{character.species}</LabeledValue>
 
-          <LabeledValue
-            label="Added"
-            value={new Date(character.created)}
-            formatOptions={{ dateStyle: 'long' }}
-          />
+          <LabeledValue label="Origin">
+            {character.origin.name}
+            {originLocation?.dimension !== 'unknown' && ` in ${originLocation?.dimension}`}
+          </LabeledValue>
+
+          <LabeledValue label="Status">{character.status}</LabeledValue>
+
+          <LabeledValue label="Last known location">
+            {character.location.name}
+            {lastLocation?.dimension !== 'unknown' && ` in ${lastLocation?.dimension}`}
+          </LabeledValue>
+
+          {firstEpisode && (
+            <LabeledValue label="First seen in episode">
+              {firstEpisode.episode} - {firstEpisode.name} on{' '}
+              {parse(firstEpisode.air_date ?? '', 'MMMM d, y', new Date()).toLocaleDateString()}
+            </LabeledValue>
+          )}
+
+          <LabeledValue label="Seen in episodes (total)">{character.episode.length}</LabeledValue>
         </Flex>
       </View>
 

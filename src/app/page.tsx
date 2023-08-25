@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
 import { EpisodesGrid, PageSection } from '@/components';
-import { CharactersGrid } from '@/components/charactersGrid';
+import { CharactersGrid } from '@/components';
 import {
   readCharacters,
   ReadCharactersApiResponse,

@@ -1,19 +1,27 @@
 'use client';
 
-import { Button, Flex, Grid, Heading, View } from '@adobe/react-spectrum';
+import { Flex, Grid, View } from '@adobe/react-spectrum';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import { PageSection } from '@/components';
 import { readLocations, ReadLocationsApiResponse } from '@/utils';
 
 export default function LocationsPage(): JSX.Element {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<ReadLocationsApiResponse>({
-    queryKey: ['locations'],
-    queryFn: readLocations,
-    getNextPageParam: (lastPage) =>
-      lastPage.info.next ? lastPage.info.next.split('page=')[1] : undefined,
-    enabled: true,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetching } =
+    useInfiniteQuery<ReadLocationsApiResponse>({
+      queryKey: ['locations'],
+      queryFn: readLocations,
+      getNextPageParam: (lastPage) =>
+        lastPage.info.next ? lastPage.info.next.split('page=')[1] : undefined,
+      enabled: true,
+    });
+
+  useEffect(() => {
+    if (!isFetching && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [isFetching, hasNextPage, fetchNextPage]);
 
   return (
     <PageSection title="Locations">
@@ -23,12 +31,6 @@ export default function LocationsPage(): JSX.Element {
             page.results.map((location) => <View key={location.id}>{location.name}</View>)
           )}
         </Grid>
-
-        {hasNextPage && (
-          <Button variant="primary" onPress={() => fetchNextPage()} alignSelf="center">
-            Show more
-          </Button>
-        )}
       </Flex>
     </PageSection>
   );

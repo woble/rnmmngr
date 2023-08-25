@@ -1,6 +1,7 @@
 'use client';
 
 import { defaultTheme, Grid, Provider, View } from '@adobe/react-spectrum';
+import { ToastContainer } from '@react-spectrum/toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -22,6 +23,8 @@ export const Layout = ({ children }: { children: React.ReactNode }): JSX.Element
       <ReactQueryDevtools initialIsOpen={false} />
 
       <Provider theme={defaultTheme} colorScheme="light">
+        <ToastContainer />
+
         <AppContextProvider>
           <View width="100vw" height="100vh">
             <Grid

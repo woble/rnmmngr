@@ -1,13 +1,12 @@
 'use client';
 
 import { Flex } from '@adobe/react-spectrum';
-import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useContext, useMemo } from 'react';
 
 import { AppContext } from '@/app/appContext';
 import { CharacterDetails, FavouriteCharacterToggleButton, PageSection } from '@/components';
-import { readCharacter, ReadCharacterApiResponse } from '@/utils';
+import { useCharacter } from '@/utils';
 
 import { DeleteAction, EditAction } from './components';
 import { CharacterPageContext } from './context';
@@ -17,10 +16,8 @@ export default function CharacterPage(): JSX.Element {
   const params = useParams();
   const id = parseInt(params.id as string);
 
-  const { data: character } = useQuery<ReadCharacterApiResponse>({
-    queryKey: ['characters', id],
-    queryFn: () => readCharacter({ id }),
-    refetchOnMount: false,
+  const { data: character } = useCharacter({
+    id,
   });
 
   const actions = useMemo(() => {

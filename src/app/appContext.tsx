@@ -1,5 +1,5 @@
 import noop from 'lodash/noop';
-import { createContext, Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 
 import { User } from '@/utils';
 
@@ -12,7 +12,7 @@ type FavouriteCharacterFn = (options: FavouriteCharacterFnOptions) => void;
 
 type AppContextValue = {
   readonly user?: User;
-  readonly setUser: Dispatch<SetStateAction<User | undefined>>;
+  readonly setUser: (user?: User) => void;
   readonly favouriteCharacter: FavouriteCharacterFn;
   readonly favouriteCharacterIds: readonly number[];
 };
@@ -46,11 +46,31 @@ export const AppContextProvider = ({ children }: AppContextProviderProps): JSX.E
     });
   }, []);
 
+  const _setUser = useCallback<AppContextValue['setUser']>((user) => {
+    setUser(user);
+
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, []);
+
+  // Handles setting the user from localStorage
+  useEffect(() => {
+    const initialLocalStorageUserString = localStorage.getItem('user');
+    const initialLocalStorageUser = initialLocalStorageUserString
+      ? JSON.parse(initialLocalStorageUserString)
+      : undefined;
+
+    setUser(initialLocalStorageUser);
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
         user,
-        setUser,
+        setUser: _setUser,
         favouriteCharacterIds,
         favouriteCharacter,
       }}
