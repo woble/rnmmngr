@@ -6,6 +6,7 @@ export type User = {
 };
 
 export type UserPermissions = {
+  readonly canCreate: boolean;
   readonly canModify: boolean;
   readonly canDelete: boolean;
 };

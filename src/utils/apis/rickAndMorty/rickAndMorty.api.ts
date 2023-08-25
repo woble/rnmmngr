@@ -1,3 +1,5 @@
+import { sleep } from '@/utils';
+
 import {
   RickAndMortyCharacter,
   RickAndMortyEpisode,

@@ -5,21 +5,25 @@ import UserAdd from '@spectrum-icons/workflow/UserAdd';
 import ViewGrid from '@spectrum-icons/workflow/ViewGrid';
 import ViewList from '@spectrum-icons/workflow/ViewList';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { Waypoint } from 'react-waypoint';
 
 import { CharactersGrid, NewCharacterDialog, PageSection } from '@/components';
 import { readCharacters, ReadCharactersApiResponse } from '@/utils';
 
+import { AppContext } from '../appContext';
+
 export default function CharactersPage(): JSX.Element {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<ReadCharactersApiResponse>({
-    queryKey: ['characters', 'infinite'],
-    queryFn: readCharacters,
-    getNextPageParam: (lastPage) =>
-      lastPage.info.next ? lastPage.info.next.split('page=')[1] : undefined,
-    enabled: true,
-    refetchOnMount: false,
-  });
+  const { user } = useContext(AppContext);
+  const { data, fetchNextPage, hasNextPage, isInitialLoading } =
+    useInfiniteQuery<ReadCharactersApiResponse>({
+      queryKey: ['characters', 'infinite'],
+      queryFn: readCharacters,
+      getNextPageParam: (lastPage) =>
+        lastPage.info.next ? lastPage.info.next.split('page=')[1] : undefined,
+      enabled: true,
+      refetchOnMount: false,
+    });
 
   const characters = useMemo(() => {
     if (!data || !data.pages) {
@@ -40,27 +44,32 @@ export default function CharactersPage(): JSX.Element {
   const actions = useMemo(() => {
     return (
       <Flex gap="size-400">
-        <ActionGroup
-          // isQuiet
-          buttonLabelBehavior="hide"
-          aria-label="Tools for managing characters"
-          onAction={handleAction}
-        >
-          <Item key="new">
-            <UserAdd />
-            <Text>New character</Text>
-          </Item>
-        </ActionGroup>
+        {user?.permissions.canCreate && (
+          <>
+            <ActionGroup
+              buttonLabelBehavior="hide"
+              aria-label="Tools for managing characters"
+              onAction={handleAction}
+            >
+              <Item key="new">
+                <UserAdd />
+                <Text>New character</Text>
+              </Item>
+            </ActionGroup>
 
-        <DialogContainer onDismiss={() => setIsDialogOpen(false)}>
-          {isDialogOpen && <NewCharacterDialog onCreated={(character) => console.log(character)} />}
-        </DialogContainer>
+            <DialogContainer onDismiss={() => setIsDialogOpen(false)}>
+              {isDialogOpen && (
+                <NewCharacterDialog onCreated={(character) => console.log(character)} />
+              )}
+            </DialogContainer>
+          </>
+        )}
 
         <ActionGroup
           isQuiet
           buttonLabelBehavior="hide"
           selectionMode="single"
-          // disallowEmptySelection
+          disallowEmptySelection
           disabledKeys={['list']}
           defaultSelectedKeys={['grid']}
         >
@@ -76,17 +85,13 @@ export default function CharactersPage(): JSX.Element {
         </ActionGroup>
       </Flex>
     );
-  }, [handleAction, isDialogOpen]);
+  }, [handleAction, isDialogOpen, user]);
 
   return (
     <PageSection title="Characters" actions={actions}>
       <Flex direction="column" gap="size-400">
-        {characters && (
-          <>
-            <CharactersGrid characters={characters} />
-            {hasNextPage && <Waypoint bottomOffset={-400} onEnter={() => fetchNextPage()} />}
-          </>
-        )}
+        <CharactersGrid isLoading={isInitialLoading} loadingItems={20} characters={characters} />
+        {hasNextPage && <Waypoint bottomOffset={-600} onEnter={() => fetchNextPage()} />}
       </Flex>
     </PageSection>
   );

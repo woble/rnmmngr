@@ -6,6 +6,7 @@ export const dummyUsers: User[] = [
     email: 'admin@example.com',
     name: 'Admin',
     permissions: {
+      canCreate: true,
       canDelete: true,
       canModify: true,
     },
@@ -15,6 +16,7 @@ export const dummyUsers: User[] = [
     email: 'editor@example.com',
     name: 'Editor',
     permissions: {
+      canCreate: false,
       canDelete: false,
       canModify: true,
     },
@@ -24,6 +26,7 @@ export const dummyUsers: User[] = [
     email: 'viewer@example.com',
     name: 'Viewer',
     permissions: {
+      canCreate: false,
       canDelete: false,
       canModify: false,
     },

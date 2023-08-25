@@ -17,7 +17,7 @@ import {
 export default function HomePage() {
   const router = useRouter();
 
-  const { data: charactersData } = useQuery<ReadCharactersApiResponse>({
+  const { data: charactersData, isInitialLoading } = useQuery<ReadCharactersApiResponse>({
     queryKey: ['characters'],
     queryFn: readCharacters,
     refetchOnMount: false,
@@ -51,7 +51,7 @@ export default function HomePage() {
         title="Characters"
         actions={<ActionButton onPress={() => router.push('/characters')}>View all</ActionButton>}
       >
-        {characters && <CharactersGrid characters={characters} />}
+        <CharactersGrid isLoading={isInitialLoading} characters={characters} />
       </PageSection>
 
       <PageSection

@@ -3,6 +3,7 @@ import { Grid } from '@adobe/react-spectrum';
 import { RickAndMortyEpisode } from '@/utils';
 
 import { EpisodeCard } from '../episodeCard';
+import { GridBase } from '../gridBase';
 
 type EpisodesGridProps = {
   episodes: readonly RickAndMortyEpisode[];
@@ -11,10 +12,10 @@ type EpisodesGridProps = {
 export const EpisodesGrid = (props: EpisodesGridProps): JSX.Element => {
   const { episodes } = props;
   return (
-    <Grid gap="size-200" columns="repeat(auto-fit, minmax(280px, 1fr))">
+    <GridBase minCellWidth={280}>
       {episodes.map((episode) => (
         <EpisodeCard key={episode.id} episode={episode} />
       ))}
-    </Grid>
+    </GridBase>
   );
 };

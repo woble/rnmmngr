@@ -1,10 +1,10 @@
 'use client';
 
-import { Flex, Grid, View } from '@adobe/react-spectrum';
+import { Flex, View } from '@adobe/react-spectrum';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { PageSection } from '@/components';
+import { GridBase, PageSection } from '@/components';
 import { readLocations, ReadLocationsApiResponse } from '@/utils';
 
 export default function LocationsPage(): JSX.Element {
@@ -26,11 +26,11 @@ export default function LocationsPage(): JSX.Element {
   return (
     <PageSection title="Locations">
       <Flex direction="column" gap="size-400">
-        <Grid gap="size-200" columns="repeat(auto-fit, minmax(270px, 1fr))">
+        <GridBase minCellWidth={270}>
           {data?.pages.map((page) =>
             page.results.map((location) => <View key={location.id}>{location.name}</View>)
           )}
-        </Grid>
+        </GridBase>
       </Flex>
     </PageSection>
   );
