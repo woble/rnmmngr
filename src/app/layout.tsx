@@ -1,10 +1,10 @@
-import { Layout } from './components';
+import { LayoutContainer } from './components';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body style={{ margin: 0 }}>
-        <Layout>{children}</Layout>
+        <LayoutContainer>{children}</LayoutContainer>
       </body>
     </html>
   );

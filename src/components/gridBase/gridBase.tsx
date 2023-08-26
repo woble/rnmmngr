@@ -6,7 +6,7 @@ export type GridBaseProps = {
 
 export const GridBase = (props: GridBaseProps): JSX.Element => {
   const { minCellWidth, children, ...gridProps } = props;
-  const columns = `repeat(auto-fit, minmax(${minCellWidth}px, 1fr))`;
+  const columns = `repeat(auto-fill, minmax(${minCellWidth}px, 1fr))`;
 
   return (
     <Grid gap="size-200" columns={columns} {...gridProps}>

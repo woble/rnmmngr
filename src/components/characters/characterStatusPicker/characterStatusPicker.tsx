@@ -23,13 +23,10 @@ const items: readonly Item[] = [
   },
 ];
 
-type CharacterStatusPickerProps = Pick<
-  SpectrumPickerProps<Item>,
-  'onSelectionChange' | 'selectedKey'
->;
+type CharacterStatusPickerProps = Omit<SpectrumPickerProps<Item>, 'items' | 'children'>;
 
 export const CharacterStatusPicker = (props: CharacterStatusPickerProps): JSX.Element => {
-  const { onSelectionChange, selectedKey } = props;
+  const { onSelectionChange, selectedKey, ...restProps } = props;
 
   const handleSelectionChange = useCallback(
     (value: React.Key) => {
@@ -45,6 +42,7 @@ export const CharacterStatusPicker = (props: CharacterStatusPickerProps): JSX.El
       items={items}
       selectedKey={selectedKey}
       onSelectionChange={handleSelectionChange}
+      {...restProps}
     >
       {(item) => <Item key={item.key}>{item.name}</Item>}
     </Picker>

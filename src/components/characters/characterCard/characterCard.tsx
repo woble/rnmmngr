@@ -1,5 +1,6 @@
 import {
   ActionButton,
+  Badge,
   Content,
   DialogContainer,
   Flex,
@@ -10,6 +11,7 @@ import {
 } from '@adobe/react-spectrum';
 import ChevronRight from '@spectrum-icons/workflow/ChevronRight';
 import Preview from '@spectrum-icons/workflow/Preview';
+import { differenceInCalendarDays, formatDistance, parseISO } from 'date-fns';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
@@ -30,7 +32,15 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { character } = props;
-  const { id, name, image, gender, species } = character;
+  const { id, name, image, gender, species, date_range } = character;
+
+  const startDate = parseISO(date_range.start);
+  const endDate = parseISO(date_range.end);
+
+  const startDateString = startDate.toLocaleDateString();
+  const endDateString = endDate.toDateString();
+  const durationInDay = differenceInCalendarDays(endDate, startDate).toString();
+  const distanceInDays = formatDistance(endDate, new Date(), { addSuffix: true });
 
   return (
     <>
@@ -44,8 +54,8 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
         position="relative"
       >
         <Flex direction="column" height="100%">
-          <View elementType="header" flexShrink={0} padding="size-100" paddingBottom={0}>
-            <AspectRatio ratio={1 / 1} borderRadius="small" overflow="hidden">
+          <View elementType="header" flexShrink={0} paddingBottom={0} position="relative">
+            <AspectRatio ratio={1 / 1} overflow="hidden">
               {image && (
                 <NextImage
                   src={image}
@@ -56,6 +66,10 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
                 />
               )}
             </AspectRatio>
+
+            <Flex gap="size-100" position="absolute" top="size-100" left="size-100">
+              <Badge variant="info">{distanceInDays}</Badge>
+            </Flex>
           </View>
 
           <View elementType="section" padding="size-200" flexGrow={1}>
@@ -65,6 +79,10 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
 
             <Content>
               {gender !== 'unknown' ? gender : null} {species}
+            </Content>
+
+            <Content>
+              {startDateString} - {endDateString}
             </Content>
           </View>
 

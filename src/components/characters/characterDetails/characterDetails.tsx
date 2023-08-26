@@ -1,6 +1,6 @@
 import { Flex, Grid, View } from '@adobe/react-spectrum';
 import { useQuery } from '@tanstack/react-query';
-import { parse } from 'date-fns';
+import { parse, parseISO } from 'date-fns';
 import Image from 'next/image';
 
 import { LabeledValue } from '@/components';
@@ -47,7 +47,7 @@ export const CharacterDetails = ({ character }: CharacterDetailsProps): JSX.Elem
   });
 
   return (
-    <Grid columns="180px 1fr" gap="size-200">
+    <Grid columns="200px 1fr" gap="size-200">
       <View>
         <AspectRatio ratio={1 / 1} marginBottom="size-200" borderRadius="regular" overflow="hidden">
           {character.image && (
@@ -62,6 +62,10 @@ export const CharacterDetails = ({ character }: CharacterDetailsProps): JSX.Elem
         </AspectRatio>
 
         <Flex direction="column" gap="size-200">
+          <LabeledValue label="Next meetup">
+            {parseISO(character.date_range.start).toLocaleDateString()}
+          </LabeledValue>
+
           <LabeledValue label="Gender">{character.gender}</LabeledValue>
           <LabeledValue label="Species">{character.species}</LabeledValue>
 

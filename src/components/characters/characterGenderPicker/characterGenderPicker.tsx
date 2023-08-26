@@ -30,13 +30,10 @@ const items: readonly {
   },
 ];
 
-type CharacterGenderPickerProps = Pick<
-  SpectrumPickerProps<Item>,
-  'onSelectionChange' | 'selectedKey'
->;
+type CharacterGenderPickerProps = Omit<SpectrumPickerProps<Item>, 'items' | 'children'>;
 
 export const CharacterGenderPicker = (props: CharacterGenderPickerProps): JSX.Element => {
-  const { onSelectionChange, selectedKey } = props;
+  const { onSelectionChange, selectedKey, ...restProps } = props;
 
   const handleSelectionChange = useCallback(
     (value: React.Key) => {
@@ -52,6 +49,7 @@ export const CharacterGenderPicker = (props: CharacterGenderPickerProps): JSX.El
       items={items}
       selectedKey={selectedKey}
       onSelectionChange={handleSelectionChange}
+      {...restProps}
     >
       {(item) => <Item key={item.key}>{item.name}</Item>}
     </Picker>

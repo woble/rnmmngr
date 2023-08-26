@@ -2,6 +2,7 @@ import {
   Button,
   ButtonGroup,
   Content,
+  DateRangePicker,
   Dialog,
   Divider,
   Form,
@@ -9,6 +10,8 @@ import {
   TextField,
   useDialogContainer,
 } from '@adobe/react-spectrum';
+import { parseDate } from '@internationalized/date';
+import { addDays, differenceInCalendarDays, format, isBefore, parseISO } from 'date-fns';
 import { useCallback, useMemo } from 'react';
 import { useSetState } from 'react-use';
 
@@ -28,7 +31,40 @@ type NewCharacterDialogProps = {
 export const NewCharacterDialog = (props: NewCharacterDialogProps): JSX.Element => {
   const { onCreated } = props;
   const dialogContainer = useDialogContainer();
-  const [character, setCharacter] = useSetState<RickAndMortyCharacter>();
+  const [character, setCharacter] = useSetState<RickAndMortyCharacter>({
+    id: 1000,
+    date_range: {
+      start: addDays(new Date(new Date().toDateString()), 1).toISOString(),
+      end: addDays(new Date(new Date().toDateString()), 1).toISOString(),
+    },
+    episode: [],
+    gender: 'unknown',
+    image: '',
+    location: {
+      name: '',
+      url: '',
+    },
+    name: '',
+    origin: {
+      name: '',
+      url: '',
+    },
+    species: '',
+    status: 'unknown',
+    type: '',
+    url: '',
+    created: '',
+  });
+
+  const isFormValid = useMemo(() => {
+    const startDate = parseISO(character.date_range.start);
+    const endDate = parseISO(character.date_range.end);
+    const isValidDate =
+      differenceInCalendarDays(endDate, startDate) >= 0 && !isBefore(startDate, new Date());
+
+    const isValidName = !!character.name;
+    return isValidDate && isValidName;
+  }, [character]);
 
   const handleSave = useCallback(() => {
     onCreated?.(character);
@@ -45,6 +81,9 @@ export const NewCharacterDialog = (props: NewCharacterDialogProps): JSX.Element 
           <TextField
             label="Name"
             name="name"
+            isRequired
+            validationState={!!character.name ? undefined : 'invalid'}
+            errorMessage="Name is required"
             value={character.name}
             onChange={(name) => setCharacter({ name })}
           />
@@ -69,6 +108,29 @@ export const NewCharacterDialog = (props: NewCharacterDialogProps): JSX.Element 
               setCharacter({ gender: gender as RickAndMortyCharacterGender })
             }
           />
+
+          <DateRangePicker
+            label="Date test"
+            hideTimeZone
+            granularity="day"
+            shouldForceLeadingZeros
+            isRequired
+            value={{
+              start: parseDate(
+                format(parseISO(character.date_range.start ?? new Date()), 'y-MM-dd')
+              ),
+              end: parseDate(format(parseISO(character.date_range.end ?? new Date()), 'y-MM-dd')),
+            }}
+            minValue={parseDate(format(addDays(new Date(), 1), 'y-MM-dd'))}
+            onChange={(value) => {
+              setCharacter({
+                date_range: {
+                  start: value.start.toString(),
+                  end: value.end.toString(),
+                },
+              });
+            }}
+          />
         </Form>
       </Content>
 
@@ -79,6 +141,7 @@ export const NewCharacterDialog = (props: NewCharacterDialogProps): JSX.Element 
 
         <Button
           variant="accent"
+          isDisabled={!isFormValid}
           onPress={() => {
             handleSave();
           }}

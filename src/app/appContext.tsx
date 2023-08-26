@@ -42,6 +42,8 @@ export const AppContextProvider = ({ children }: AppContextProviderProps): JSX.E
         ? [...prevFavouriteCharacterIds, id]
         : prevFavouriteCharacterIds.filter((prevId) => prevId !== id);
 
+      localStorage.setItem('favouriteCharacterIds', JSON.stringify(newFavouriteCharacterIds));
+
       return newFavouriteCharacterIds;
     });
   }, []);
@@ -53,17 +55,24 @@ export const AppContextProvider = ({ children }: AppContextProviderProps): JSX.E
       localStorage.setItem('user', JSON.stringify(user));
     } else {
       localStorage.removeItem('user');
+      localStorage.removeItem('favouriteCharacterIds');
     }
   }, []);
 
-  // Handles setting the user from localStorage
+  // Handles rstoring values form localStorage
   useEffect(() => {
     const initialLocalStorageUserString = localStorage.getItem('user');
     const initialLocalStorageUser = initialLocalStorageUserString
       ? JSON.parse(initialLocalStorageUserString)
       : undefined;
 
+    const initialLocalStorageFavIdsString = localStorage.getItem('favouriteCharacterIds');
+    const initialLocalStorageFavIds = initialLocalStorageFavIdsString
+      ? JSON.parse(initialLocalStorageFavIdsString)
+      : [];
+
     setUser(initialLocalStorageUser);
+    setFavouriteCharacterIds(initialLocalStorageFavIds);
   }, []);
 
   return (

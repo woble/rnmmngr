@@ -22,6 +22,11 @@ export type RickAndMortyCharacterLocation = {
   readonly url: string;
 };
 
+export type DateRange = {
+  readonly start: string;
+  readonly end: string;
+};
+
 export type RickAndMortyCharacter = {
   /** The id of the character. */
   readonly id: number;
@@ -47,6 +52,8 @@ export type RickAndMortyCharacter = {
   readonly url: string;
   /** Time at which the character was created in the database. */
   readonly created: string;
+  /** The date range. */
+  readonly date_range: DateRange;
 };
 
 export type RickAndMortyLocation = {

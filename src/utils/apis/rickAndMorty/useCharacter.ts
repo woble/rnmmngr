@@ -8,10 +8,10 @@ type UseCharacterProps = {
 };
 
 export function useCharacter(props: UseCharacterProps): UseQueryResult<ReadCharacterApiResponse> {
-  const id = typeof props.id === 'number' ? props.id : getIdFromUrl(props.id);
+  const id = typeof props.id === 'string' ? getIdFromUrl(props.id) : props.id;
 
   const response = useQuery({
-    queryKey: ['character', id!],
+    queryKey: ['characters', id!],
     queryFn: () => readCharacter({ id: id! }),
     enabled: typeof id !== 'undefined',
     refetchOnMount: false,

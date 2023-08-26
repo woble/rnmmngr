@@ -7,6 +7,7 @@ import {
   Heading,
   useDialogContainer,
 } from '@adobe/react-spectrum';
+import { ToastQueue } from '@react-spectrum/toast';
 
 import { RickAndMortyCharacter } from '@/utils';
 
@@ -34,6 +35,9 @@ export const DeleteCharacterDialog = ({ character }: DeleteCharacterDialogProps)
         <Button
           variant="negative"
           onPress={() => {
+            ToastQueue.positive('Character deleted', {
+              timeout: 500,
+            });
             dialogContainer.dismiss();
           }}
         >

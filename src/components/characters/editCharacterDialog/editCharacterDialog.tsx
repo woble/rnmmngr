@@ -2,6 +2,7 @@ import {
   Button,
   ButtonGroup,
   Content,
+  DateRangePicker,
   Dialog,
   Divider,
   Form,
@@ -9,8 +10,10 @@ import {
   TextField,
   useDialogContainer,
 } from '@adobe/react-spectrum';
+import { parseDate } from '@internationalized/date';
 import { ToastQueue } from '@react-spectrum/toast';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
+import { addDays, differenceInCalendarDays, format, parse, parseISO } from 'date-fns';
 import { produce } from 'immer';
 import isEqual from 'lodash/isEqual';
 import { useCallback, useMemo } from 'react';
@@ -36,15 +39,20 @@ export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JS
   const dialogContainer = useDialogContainer();
   const [draftCharacter, setDraftCharacter] = useSetState<RickAndMortyCharacter>(character);
 
-  const isDirty = useMemo(() => {
+  const isFormDirty = useMemo(() => {
     return !isEqual(character, draftCharacter);
   }, [character, draftCharacter]);
 
+  const isFormValid = useMemo(() => {
+    const startDate = parseISO(draftCharacter.date_range.start);
+    const endDate = parseISO(draftCharacter.date_range.end);
+    return differenceInCalendarDays(endDate, startDate) >= 0;
+  }, [draftCharacter.date_range]);
+
   const handleSave = useCallback(() => {
-    queryClient.setQueryData<ReadCharacterApiResponse>(
-      ['characters', character.id],
-      () => draftCharacter
-    );
+    queryClient.setQueryData<ReadCharacterApiResponse>(['characters', character.id], () => {
+      return draftCharacter;
+    });
 
     queryClient.setQueryData<InfiniteData<ReadCharactersApiResponse>>(
       ['characters', 'infinite'],
@@ -73,7 +81,7 @@ export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JS
     );
 
     ToastQueue.positive('Character updated', {
-      timeout: 50,
+      timeout: 500,
     });
   }, [character.id, draftCharacter, queryClient]);
 
@@ -87,6 +95,9 @@ export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JS
           <TextField
             label="Name"
             name="name"
+            isRequired
+            validationState={!!draftCharacter.name ? undefined : 'invalid'}
+            errorMessage="Name is required"
             value={draftCharacter.name}
             onChange={(name) => setDraftCharacter({ name })}
           />
@@ -111,13 +122,34 @@ export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JS
               setDraftCharacter({ gender: gender as RickAndMortyCharacterGender })
             }
           />
+
+          <DateRangePicker
+            label="Date test"
+            hideTimeZone
+            granularity="day"
+            shouldForceLeadingZeros
+            isRequired
+            value={{
+              start: parseDate(format(parseISO(draftCharacter.date_range.start), 'y-MM-dd')),
+              end: parseDate(format(parseISO(draftCharacter.date_range.end), 'y-MM-dd')),
+            }}
+            minValue={parseDate(format(addDays(new Date(), 1), 'y-MM-dd'))}
+            onChange={(value) => {
+              setDraftCharacter({
+                date_range: {
+                  start: parse(value.start.toString(), 'y-MM-dd', new Date()).toISOString(),
+                  end: parse(value.end.toString(), 'y-MM-dd', new Date()).toISOString(),
+                },
+              });
+            }}
+          />
         </Form>
       </Content>
 
       <ButtonGroup>
         <Button
           variant="secondary"
-          isDisabled={!isDirty}
+          isDisabled={!isFormDirty}
           onPress={() => setDraftCharacter(character)}
         >
           Reset
@@ -129,7 +161,7 @@ export const EditCharacterDialog = ({ character }: EditCharacterDialogProps): JS
 
         <Button
           variant="accent"
-          isDisabled={!isDirty}
+          isDisabled={!isFormDirty || !isFormValid}
           onPress={() => {
             handleSave();
             dialogContainer.dismiss();

@@ -12,7 +12,7 @@ import { DeleteAction, EditAction } from './components';
 import { CharacterPageContext } from './context';
 
 export default function CharacterPage(): JSX.Element {
-  const { user } = useContext(AppContext);
+  const { user, favouriteCharacterIds } = useContext(AppContext);
   const params = useParams();
   const id = parseInt(params.id as string);
 

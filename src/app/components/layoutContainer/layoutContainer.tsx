@@ -3,7 +3,8 @@
 import { defaultTheme, Grid, Provider, View } from '@adobe/react-spectrum';
 import { ToastContainer } from '@react-spectrum/toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { setDefaultOptions } from 'date-fns';
+import { enGB } from 'date-fns/locale';
 
 import { AppContextProvider } from '@/app/appContext';
 
@@ -17,12 +18,12 @@ const queryClient = new QueryClient({
   },
 });
 
-export const Layout = ({ children }: { children: React.ReactNode }): JSX.Element => {
+setDefaultOptions({ locale: enGB });
+
+export const LayoutContainer = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
-
-      <Provider theme={defaultTheme} colorScheme="light">
+      <Provider theme={defaultTheme} colorScheme="light" locale="en-GB">
         <ToastContainer />
 
         <AppContextProvider>
