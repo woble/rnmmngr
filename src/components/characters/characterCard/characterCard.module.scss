@@ -1,0 +1,9 @@
+.root {
+  transition-property: transform;
+  transition-duration: .2s;
+  transition-timing-function: ease;
+
+  &.isHovered {
+    transform: scale(1.05);
+  }
+}
