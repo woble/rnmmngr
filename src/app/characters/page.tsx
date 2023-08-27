@@ -4,36 +4,22 @@ import { ActionGroup, DialogContainer, Flex, Item, Text } from '@adobe/react-spe
 import UserAdd from '@spectrum-icons/workflow/UserAdd';
 import ViewGrid from '@spectrum-icons/workflow/ViewGrid';
 import ViewList from '@spectrum-icons/workflow/ViewList';
-import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useContext, useMemo, useState } from 'react';
-import { Waypoint } from 'react-waypoint';
 
-import { CharactersGrid, NewCharacterDialog, PageSection } from '@/components';
-import { readCharacters, ReadCharactersApiResponse } from '@/utils';
+import { NewCharacterDialog, PageSection } from '@/components';
 
 import { AppContext } from '../appContext';
 
+import { CharactersCardView } from './components/views/card/charactersCardView';
+import { CharactersTableView } from './components/views/table/charactersTableView';
+
+type CharactersView = 'grid' | 'table';
+
 export default function CharactersPage(): JSX.Element {
   const { user } = useContext(AppContext);
-  const { data, fetchNextPage, hasNextPage, isInitialLoading } =
-    useInfiniteQuery<ReadCharactersApiResponse>({
-      queryKey: ['characters', 'infinite'],
-      queryFn: readCharacters,
-      getNextPageParam: (lastPage) =>
-        lastPage.info.next ? lastPage.info.next.split('page=')[1] : undefined,
-      enabled: true,
-      refetchOnMount: false,
-    });
-
-  const characters = useMemo(() => {
-    if (!data || !data.pages) {
-      return undefined;
-    }
-
-    return data.pages.map((page) => page.results.map((character) => character)).flat();
-  }, [data]);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [view, setView] = useState<CharactersView>('grid');
 
   const handleAction = useCallback((key: React.Key) => {
     if (key === 'new') {
@@ -65,34 +51,35 @@ export default function CharactersPage(): JSX.Element {
           </>
         )}
 
-        <ActionGroup
-          isQuiet
-          buttonLabelBehavior="hide"
-          selectionMode="single"
-          disallowEmptySelection
-          disabledKeys={['list']}
-          defaultSelectedKeys={['grid']}
-        >
-          <Item key="grid">
-            <ViewGrid />
-            <Text>Grid view</Text>
-          </Item>
+        {(user?.permissions.canModify ||
+          user?.permissions.canDelete ||
+          user?.permissions.canCreate) && (
+          <ActionGroup
+            isQuiet
+            buttonLabelBehavior="hide"
+            selectionMode="single"
+            disallowEmptySelection
+            defaultSelectedKeys={['grid']}
+            onAction={(key) => setView(key as CharactersView)}
+          >
+            <Item key="grid">
+              <ViewGrid />
+              <Text>Grid view</Text>
+            </Item>
 
-          <Item key="list">
-            <ViewList />
-            <Text>List view</Text>
-          </Item>
-        </ActionGroup>
+            <Item key="list">
+              <ViewList />
+              <Text>List view</Text>
+            </Item>
+          </ActionGroup>
+        )}
       </Flex>
     );
   }, [handleAction, isDialogOpen, user]);
 
   return (
     <PageSection title="Characters" actions={actions}>
-      <Flex direction="column" gap="size-400">
-        <CharactersGrid isLoading={isInitialLoading} loadingItems={20} characters={characters} />
-        {hasNextPage && <Waypoint bottomOffset={-600} onEnter={() => fetchNextPage()} />}
-      </Flex>
+      {view === 'grid' ? <CharactersCardView /> : <CharactersTableView />}
     </PageSection>
   );
 }

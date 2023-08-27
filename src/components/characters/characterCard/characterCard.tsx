@@ -38,9 +38,11 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
   const endDate = parseISO(date_range.end);
 
   const startDateString = startDate.toLocaleDateString();
-  const endDateString = endDate.toDateString();
+  const endDateString = endDate.toLocaleDateString();
   const durationInDay = differenceInCalendarDays(endDate, startDate).toString();
-  const distanceInDays = formatDistance(endDate, new Date(), { addSuffix: true });
+  const distanceInDays = formatDistance(startDate, new Date(new Date().toDateString()), {
+    addSuffix: true,
+  });
 
   return (
     <>
@@ -68,7 +70,7 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
             </AspectRatio>
 
             <Flex gap="size-100" position="absolute" top="size-100" left="size-100">
-              <Badge variant="info">{distanceInDays}</Badge>
+              <Badge variant="fuchsia">{distanceInDays}</Badge>
             </Flex>
           </View>
 
@@ -78,11 +80,11 @@ export const CharacterCard = (props: CharacterCardProps): JSX.Element => {
             </Heading>
 
             <Content>
-              {gender !== 'unknown' ? gender : null} {species}
+              {startDateString} - {endDateString}
             </Content>
 
             <Content>
-              {startDateString} - {endDateString}
+              {gender !== 'unknown' ? gender : null} {species}
             </Content>
           </View>
 

@@ -2,7 +2,7 @@
 
 import { ActionButton, Flex } from '@adobe/react-spectrum';
 import { useQuery } from '@tanstack/react-query';
-import { addWeeks, isWithinInterval, parseISO } from 'date-fns';
+import { addWeeks, getWeek, isWithinInterval, parseISO } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useContext, useMemo } from 'react';
 
@@ -54,13 +54,24 @@ export default function HomePage() {
       if (dateRangeGroupIndex > -1) {
         dateRangeGroups[dateRangeGroupIndex].items.push(result);
       } else {
+        const startDate = parseISO(result.date_range.start);
         const dateRange: DateRange = {
           start: result.date_range.start,
-          end: addWeeks(parseISO(result.date_range.start), 1).toISOString(),
+          end: addWeeks(startDate, 1).toISOString(),
         };
 
+        const todayDate = new Date(new Date().toDateString());
+        const weekNumber = getWeek(startDate);
+
+        const isEventThisWeek = isWithinInterval(startDate, {
+          start: todayDate,
+          end: addWeeks(todayDate, 1),
+        });
+
+        const title = isEventThisWeek ? 'This week events' : `Events in week ${weekNumber}`;
+
         dateRangeGroups.push({
-          title: 'Upcoming events',
+          title,
           date_range: dateRange,
           items: [result],
         });
@@ -73,10 +84,7 @@ export default function HomePage() {
   return (
     <Flex gap="size-800" direction="column">
       {favouriteCharacters?.length && (
-        <PageSection
-          title="Favourite character events"
-          actions={<ActionButton onPress={() => router.push('/characters')}>View all</ActionButton>}
-        >
+        <PageSection title="My events">
           <CharactersGrid isLoading={isInitialLoading} characters={favouriteCharacters} />
         </PageSection>
       )}
